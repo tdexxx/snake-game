@@ -9,6 +9,8 @@ import math
 pygame.init()
 pygame.mixer.init()
 
+# Function to update game state for AI
+
 def update_snake_state(snake_list, food_pos, obstacles, score, game_over):
     """更新AI使用的游戏状态"""
     from snake_test import update_game_state
@@ -87,7 +89,7 @@ font_path = os.path.join(base_path, "simhei.ttf")
 font_style = pygame.font.Font(font_path, 30)
 score_font = pygame.font.Font(font_path, 35)
 
-
+# Function to display score and level
 def display_score(score, level, high_score):
     """Display the current score, level and high score on the screen"""
     # Score
@@ -137,14 +139,14 @@ def draw_snake(block_size, snake_list):
                              (segment[0] + 2*block_size//3, segment[1] + block_size//3), 
                              eye_radius//2)
 
-
+# Function to display messages
 def message(msg, color, y_offset=0):
     """Display a message on the screen"""
     mesg = font_style.render(msg, True, color)
     mesg_rect = mesg.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + y_offset))
     game_display.blit(mesg, mesg_rect)
 
-
+# Function to generate food position
 def generate_food(obstacles=None):
     """Generate a random position for food that's not inside an obstacle"""
     if obstacles is None:
@@ -164,7 +166,7 @@ def generate_food(obstacles=None):
         if position_valid:
             return food_x, food_y
 
-
+# Function to generate obstacles based on level
 def generate_obstacles(level, snake_pos=None):
     """Generate obstacles based on the current level"""
     obstacles = []
@@ -179,7 +181,7 @@ def generate_obstacles(level, snake_pos=None):
     safe_zone = []
     if snake_pos:
         safe_zone = [snake_pos[0], snake_pos[1]]
-    
+    # Generate obstacles
     for _ in range(num_obstacles):
         while True:
             obs_x = round(random.randrange(0, WINDOW_WIDTH - BLOCK_SIZE) / BLOCK_SIZE) * BLOCK_SIZE
@@ -191,14 +193,14 @@ def generate_obstacles(level, snake_pos=None):
                 break
                 
     return obstacles
-
+# Function to show level transition screen
 def show_level_screen(level):
     """Show level transition screen"""
     game_display.fill(WHITE)
     message(f"恭喜! 进入关卡 {level}", GREEN)
     message("按空格键继续", BLACK, 30)
     pygame.display.update()
-    
+    # Wait for user input
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -212,7 +214,7 @@ def show_level_screen(level):
                     pygame.quit()
                     quit()
         clock.tick(5)
-
+# Functions to load and save high score
 def load_high_score():
     """Load the high score from file"""
     try:
@@ -220,7 +222,7 @@ def load_high_score():
             return int(f.read())
     except:
         return 0
-
+# Function to save high score
 def save_high_score(score):
     """Save the high score to file"""
     try:
@@ -228,7 +230,7 @@ def save_high_score(score):
             f.write(str(score))
     except:
         pass
-
+# Particle effect functions
 def create_particle_effect(x, y, color):
     """Create particle effect at given position"""
     particles = []
@@ -245,7 +247,7 @@ def create_particle_effect(x, y, color):
         }
         particles.append(particle)
     return particles
-
+# Function to update particle positions
 def update_particles(particles):
     """Update particle positions and lifetimes"""
     alive_particles = []
@@ -256,7 +258,7 @@ def update_particles(particles):
         if p['lifetime'] > 0:
             alive_particles.append(p)
     return alive_particles
-
+# Function to draw particles
 def draw_particles(particles):
     """Draw particles on screen"""
     for p in particles:
@@ -265,7 +267,7 @@ def draw_particles(particles):
         s = pygame.Surface((4, 4), pygame.SRCALPHA)
         pygame.draw.circle(s, color, (2, 2), 2)
         game_display.blit(s, (int(p['x']), int(p['y'])))
-
+# Tutorial function
 def show_tutorial():
     """Display game tutorial"""
     tutorial_steps = [
@@ -275,7 +277,7 @@ def show_tutorial():
         ("特殊物品", "黄色物品是特殊能力, 可以获得临时增益", YELLOW),
         ("游戏控制", "空格键: 暂停游戏\nP键: 暂停\nQ键: 退出", ORANGE)
     ]
-    
+    # Display tutorial steps
     for title, desc, color in tutorial_steps:
         game_display.fill(WHITE)
         message(title, color, -50)
@@ -296,7 +298,7 @@ def show_tutorial():
                         pygame.quit()
                         quit()
             clock.tick(5)
-
+# Main menu function
 def draw_menu():
     """Draw the main menu"""
     game_display.fill(WHITE)
@@ -306,7 +308,7 @@ def draw_menu():
     message("3. 选择难度", BLACK, 30)
     message("4. 退出", BLACK, 60)
     pygame.display.update()
-
+# Function to handle difficulty selection
 def choose_difficulty():
     """Let player choose difficulty"""
     game_display.fill(WHITE)
@@ -315,7 +317,7 @@ def choose_difficulty():
     message("2. 普通", YELLOW, 10)
     message("3. 困难", RED, 40)
     pygame.display.update()
-    
+    # Wait for user input
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -333,7 +335,7 @@ def choose_difficulty():
                     pygame.quit()
                     quit()
         clock.tick(5)
-
+# Function to spawn power-up
 def spawn_powerup():
     """Spawn a power-up item"""
     if random.random() < POWERUP_CHANCE:
@@ -342,7 +344,7 @@ def spawn_powerup():
         power_type = random.choice(POWERUP_TYPES)
         return power_x, power_y, power_type
     return None
-
+# Function to apply power-up effects
 def apply_powerup(power_type, current_speed, score_multiplier):
     """Apply power-up effects"""
     if power_type == "speed":
@@ -352,7 +354,7 @@ def apply_powerup(power_type, current_speed, score_multiplier):
     elif power_type == "double_points":
         return current_speed, score_multiplier * 2
     return current_speed, score_multiplier
-
+# Main game loop
 def game_loop(ai_mode=False):
     """Main game loop"""
     game_state = MENU
